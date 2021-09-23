@@ -35,6 +35,7 @@ module constituents
   public cnst_read_iv         ! query whether constituent initial values are read from initial file
   public cnst_chk_dim         ! check that number of constituents added equals dimensions (pcnst)
   public cnst_cam_outfld      ! Returns true if default CAM output was specified in the cnst_add calls.
+  public cnst_get_name
 
 ! Public data
 
@@ -287,6 +288,18 @@ CONTAINS
 
 
   end function cnst_get_type_byind
+
+  character(len=16) function cnst_get_name (ind)
+    integer, intent(in)   :: ind    ! global constituent index (in q array)
+    integer :: m                                   ! tracer index
+    if (ind.le.pcnst) then
+       cnst_get_name = cnst_name(ind)
+    else
+       ! Unrecognized name
+       write(iulog,*) 'CNST_GET_TYPE_BYIND, ind:', ind
+       call endrun
+    endif
+  end function cnst_get_name
 
 !==============================================================================================
 

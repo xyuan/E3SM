@@ -60,7 +60,7 @@
       <value compset="_EAM%MMFXX"             >-crm samxx</value>
       <value compset="_EAM%MMFOMP"            >-crm samomp</value>
       <value compset="_EAM%MMF"               >-rad rrtmgp </value>
-      <value compset="_EAM%MMF[1XO]"          >-MMF_microphysics_scheme sam1mom -chem none</value>
+      <value compset="_EAM%MMF[1XO]"          >-MMF_microphysics_scheme Micro_p3 -chem none</value>
       <value compset="_EAM%MMF2"              >-MMF_microphysics_scheme m2005 </value>
       <value compset="_EAM%MMF2"              >-chem linoz_mam4_resus_mom_soag -rain_evap_to_coarse_aero </value>
       <value compset="_EAM%MMF2-ECPP"         >-use_ECPP </value>
