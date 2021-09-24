@@ -4,7 +4,6 @@ module params_kind
   use shr_kind_mod,  only: shr_kind_r8
 #endif
   implicit none
-
 #ifdef CRM_SINGLE_PRECISION
   integer, parameter :: crm_rknd = selected_real_kind( 6) ! 4 byte real
 #else
@@ -17,5 +16,4 @@ module params_kind
 #else
   integer, parameter :: r8 = shr_kind_r8
 #endif
-
 end module params_kind

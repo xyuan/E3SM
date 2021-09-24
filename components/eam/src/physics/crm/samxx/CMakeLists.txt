@@ -14,7 +14,7 @@ if (${USE_CUDA})
   set_target_properties(samxx PROPERTIES LINKER_LANGUAGE CUDA CUDA_SEPARABLE_COMPILATION OFF CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
 # samxx needs to link with the yakl library
-target_link_libraries(samxx yakl)
+target_link_libraries(samxx yakl ekat p3 shoc physics_share scream_share)
 target_compile_features(samxx PUBLIC cxx_std_14)
 
 # Set fortran compiler flags
@@ -27,4 +27,14 @@ message(STATUS "YAKL Flags: ${YAKL_COMPILER_FLAGS}")
 
 # Include YAKL source and library directories
 include_directories(${YAKL_BIN})
+include_directories(${YAKL_HOME})
+include_directories(${SCREAM_SOURCE_DIR}/share)
+include_directories(${SCREAM_SOURCE_DIR}/physics/p3)
+include_directories(${SCREAM_SOURCE_DIR}/physics/share)
+include_directories(${SCREAM_SOURCE_DIR}/physics/shoc)
+include_directories(${SCREAM_BIN_DIR}/src)
+include_directories(${SCREAM_BIN_DIR}/src/share)
+include_directories(${SCREAM_BIN_DIR}/src/physics/p3)
+include_directories(${SCREAM_BIN_DIR}/src/physics/shoc)
+include_directories(${SCREAM_BIN_DIR}/src/physics/share)
 

@@ -14,7 +14,7 @@ module crm_input_module
    integer, parameter :: ntot_amode=1
 #endif
 
-   type crm_input_type
+   type :: crm_input_type
 
       real(crm_rknd), allocatable :: zmid(:,:)           ! Global grid height (m)
       real(crm_rknd), allocatable :: zint(:,:)           ! Global grid interface height (m)
@@ -48,6 +48,30 @@ module crm_input_module
       real(crm_rknd), allocatable :: t_vt(:,:)           ! CRM input of variance used for forcing tendency
       real(crm_rknd), allocatable :: q_vt(:,:)           ! CRM input of variance used for forcing tendency
 
+      real(crm_rknd), allocatable :: relvar(:,:)          !  cloud liquid relative variance
+      real(crm_rknd), allocatable :: nccn_prescribed(:,:) ! ccn prescribed concentration
+      real(crm_rknd), allocatable :: ni_activated(:,:) 
+      real(crm_rknd), allocatable :: npccn(:,:)
+      real(crm_rknd), allocatable :: t_prev(:,:)
+      real(crm_rknd), allocatable :: qv_prev(:,:)
+      real(crm_rknd), allocatable :: ast(:,:)
+
+      ! variable for shoc
+      real(crm_rknd), allocatable :: sl(:,:)  
+      real(crm_rknd), allocatable :: zm(:,:)
+      real(crm_rknd), allocatable :: omega(:,:)
+      
+      real(crm_rknd), allocatable :: shf(:)      ! Sensible heat flux
+      real(crm_rknd), allocatable :: cflx(:)       ! Latent heat flux
+      real(crm_rknd), allocatable :: wsx(:)        ! Surface meridional momentum flux
+      real(crm_rknd), allocatable :: wsy(:)        ! Surface zonal momentum flux  
+
+      real(crm_rknd), allocatable :: tke_zt(:,:)  ! turbulent kinetic energy, interface
+      real(crm_rknd), allocatable :: wthv(:,:) ! buoyancy flux
+      real(crm_rknd), allocatable :: tkh(:,:)
+      real(crm_rknd), allocatable :: tk(:,:)
+      real(crm_rknd), allocatable :: alst(:,:)       ! liquid stratiform cloud fraction             [fraction]
+      real(crm_rknd), allocatable :: qtracers(:,:,:) ! tracers
    end type crm_input_type
    !------------------------------------------------------------------------------------------------
 
@@ -122,6 +146,49 @@ contains
       call prefetch(input%t_vt)
       call prefetch(input%q_vt)
 
+      if (.not. allocated(input%relvar)) allocate(input%relvar(ncrms,nlev))
+      if (.not. allocated(input%nccn_prescribed)) allocate(input%nccn_prescribed(ncrms, nlev))
+      if (.not. allocated(input%npccn)) allocate(input%npccn(ncrms, nlev))
+      if (.not. allocated(input%ni_activated)) allocate(input%ni_activated(ncrms, nlev))
+      if (.not. allocated(input%t_prev)) allocate(input%t_prev(ncrms, nlev))
+      if (.not. allocated(input%qv_prev)) allocate(input%qv_prev(ncrms, nlev))
+      if (.not. allocated(input%sl)) allocate(input%sl(ncrms, nlev))
+      if (.not. allocated(input%ast)) allocate(input%ast(ncrms, nlev))
+      if (.not. allocated(input%omega)) allocate(input%omega(ncrms, nlev))
+      if (.not. allocated(input%zm)) allocate(input%zm(ncrms, nlev))
+      if (.not. allocated(input%shf)) allocate(input%shf(ncrms))
+      if (.not. allocated(input%cflx)) allocate(input%cflx(ncrms))  
+      if (.not. allocated(input%wsx)) allocate(input%wsx(ncrms))
+      if (.not. allocated(input%wsy)) allocate(input%wsy(ncrms))
+
+      if (.not. allocated(input%tke_zt)) allocate(input%tke_zt(ncrms,nlev))
+      if (.not. allocated(input%wthv)) allocate(input%wthv(ncrms,nlev))
+      if (.not. allocated(input%tkh)) allocate(input%tkh(ncrms,nlev))
+      if (.not. allocated(input%tk)) allocate(input%tk(ncrms,nlev))
+      if (.not. allocated(input%alst)) allocate(input%alst(ncrms,nlev))
+      if (.not. allocated(input%qtracers)) allocate(input%qtracers(ncrms,nlev,10))
+
+      call prefetch(input%relvar)
+      call prefetch(input%nccn_prescribed)
+      call prefetch(input%npccn)
+      call prefetch(input%ni_activated)
+      call prefetch(input%t_prev)
+      call prefetch(input%qv_prev)
+      call prefetch(input%sl)
+      call prefetch(input%ast)
+      call prefetch(input%omega)
+      call prefetch(input%zm)
+      call prefetch(input%shf)
+      call prefetch(input%cflx)
+      call prefetch(input%wsx)
+      call prefetch(input%wsy)
+      call prefetch(input%tke_zt)
+      call prefetch(input%wthv)
+      call prefetch(input%tkh)
+      call prefetch(input%tk)
+      call prefetch(input%alst)
+      call prefetch(input%qtracers)
+
       ! Initialize
       input%zmid    = 0
       input%zint    = 0
@@ -146,6 +213,25 @@ contains
       input%fluxt00 = 0
       input%fluxq00 = 0
 
+      input%relvar  = 0
+      input%nccn_prescribed = 0
+      input%npccn = 0
+      input%t_prev = 0
+      input%qv_prev = 0
+      input%sl = 0
+      input%ast = 0
+      input%omega = 0
+      input%zm = 0
+      input%shf = 0
+      input%cflx = 0
+      input%wsx  = 0
+      input%wsy  = 0
+      input%tke_zt = 0
+      input%wthv = 0
+      input%tkh = 0
+      input%tk = 0
+      input%alst = 0
+
       if (trim(MMF_microphysics_scheme) .eq. 'm2005') then
          input%naermod  = 0
          input%vaerosol = 0
@@ -160,6 +246,8 @@ contains
       input%t_vt = 0
       input%q_vt = 0
 
+      input%relvar = 0
+      input%nccn_prescribed = 0
    end subroutine crm_input_initialize
    !------------------------------------------------------------------------------------------------
    subroutine crm_input_finalize(input, MMF_microphysics_scheme)
@@ -203,6 +291,27 @@ contains
       if (allocated(input%t_vt)) deallocate(input%t_vt)
       if (allocated(input%q_vt)) deallocate(input%q_vt)
 
+      if (allocated(input%relvar)) deallocate(input%relvar)
+      if (allocated(input%nccn_prescribed)) deallocate(input%nccn_prescribed)
+      if (allocated(input%npccn)) deallocate(input%npccn)
+      if (allocated(input%ni_activated)) deallocate(input%ni_activated)
+      if (allocated(input%t_prev)) deallocate(input%t_prev)
+      if (allocated(input%qv_prev)) deallocate(input%qv_prev)
+      if (allocated(input%sl)) deallocate(input%sl)
+      if (allocated(input%ast)) deallocate(input%ast)
+      if (allocated(input%zm)) deallocate(input%zm)
+      if (allocated(input%omega)) deallocate(input%omega)
+      if (allocated(input%shf)) deallocate(input%shf)      
+      if (allocated(input%cflx)) deallocate(input%cflx)       
+      if (allocated(input%wsx)) deallocate(input%wsx)        
+      if (allocated(input%wsy)) deallocate(input%wsy)
+
+      if (allocated(input%tke_zt)) deallocate(input%tke_zt)
+      if (allocated(input%wthv)) deallocate(input%wthv)
+      if (allocated(input%tkh)) deallocate(input%tkh)
+      if (allocated(input%tk)) deallocate(input%tk)
+      if (allocated(input%alst)) deallocate(input%alst)
+      if (allocated(input%qtracers)) deallocate(input%qtracers)
    end subroutine crm_input_finalize 
 
 end module crm_input_module
