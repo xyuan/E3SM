@@ -235,7 +235,7 @@ subroutine crm_physics_register()
       if (prog_modal_aero) then
          call pbuf_add_field('RATE1_CW2PR_ST','physpkg',dtype_r8,dims_gcm_2D,idx)
       end if
-   else if (MMF_microphysics_scheme .eq. 'micro_p3') then
+   else if (MMF_microphysics_scheme .eq. 'Micro_p3') then
       call pbuf_add_field('CRM_NC_RAD','physpkg',dtype_r8,dims_crm_rad,crm_nc_rad_idx)
       call pbuf_add_field('CRM_NI_RAD','physpkg',dtype_r8,dims_crm_rad,crm_ni_rad_idx)
       call pbuf_add_field('CRM_QS_RAD','physpkg',dtype_r8,dims_crm_rad,crm_qs_rad_idx)
@@ -884,6 +884,20 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf2d, cam_in, cam_out, 
    end do ! c=begchunk, endchunk
 
    !\
+   ! setup the tracers for shoc (10 used in scream)
+   !/
+   call cnst_get_ind('Q', ixq)
+   call cnst_get_ind('CLDLIQ', ixcldliq)
+   call cnst_get_ind('CLDICE', ixcldice)
+   call cnst_get_ind('NUMLIQ', ixnumliq)
+   call cnst_get_ind('NUMICE', ixnumice)
+   call cnst_get_ind('RAINQM', ixrain)
+   call cnst_get_ind('CLDRIM', ixcldrim)
+   call cnst_get_ind('NUMRAI', ixnumrain)
+   call cnst_get_ind('BVRIM',  ixrimvol)
+   call cnst_get_ind('SHOC_TKE',ixtke)
+
+   !\
    ! Setup the tracers for SHOC
    !/
    lq2(:)         = .false.
@@ -966,7 +980,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf2d, cam_in, cam_out, 
                   crm_qt(i,:,:,k) = state(c)%q(i,m,1)+state(c)%q(i,m,ixcldliq)+state(c)%q(i,m,ixcldice)
                   crm_qp(i,:,:,k) = 0.0_r8
                   crm_qn(i,:,:,k) = state(c)%q(i,m,ixcldliq)+state(c)%q(i,m,ixcldice)
-               else if (MMF_microphysics_scheme .eq. 'micro_p3') then
+               else if (MMF_microphysics_scheme .eq. 'Micro_p3') then
                   crm_qt(i,:,:,k)      = state(c)%q(i,m,1)+state(c)%q(i,m,ixcldliq)
                   crm_qc(i,:,:,k)      = state(c)%q(i,m,ixcldliq)
                   crm_qi(i,:,:,k)      = state(c)%q(i,m,ixcldice)
@@ -1082,7 +1096,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf2d, cam_in, cam_out, 
          if (MMF_microphysics_scheme .eq. 'sam1mom') then
             call pbuf_get_field(pbuf_chunk, pbuf_get_index('CRM_QP'), crm_qp)
             call pbuf_get_field(pbuf_chunk, pbuf_get_index('CRM_QN'), crm_qn)
-         else if (MMF_microphysics_scheme .eq. 'micro_p3') then
+         else if (MMF_microphysics_scheme .eq. 'Micro_p3') then
             call pbuf_get_field(pbuf_chunk, pbuf_get_index('CRM_NC'), crm_nc)
             call pbuf_get_field(pbuf_chunk, pbuf_get_index('CRM_QR'), crm_qr)
             call pbuf_get_field(pbuf_chunk, pbuf_get_index('CRM_NR'), crm_nr)

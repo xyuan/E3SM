@@ -94,7 +94,7 @@ contains
          call prefetch(state%ng)
       end if
 
-      if (trim(MMF_microphysics_scheme) .eq. 'micro_p3') then
+      if (trim(MMF_microphysics_scheme) .eq. 'Micro_p3') then
          if (.not. allocated(state%qc)) allocate(state%qc(ncrms,crm_nx,crm_ny,crm_nz))
          if (.not. allocated(state%qi)) allocate(state%qi(ncrms,crm_nx,crm_ny,crm_nz))
          if (.not. allocated(state%qr)) allocate(state%qr(ncrms,crm_nx,crm_ny,crm_nz))
@@ -157,7 +157,7 @@ contains
          if (allocated(state%ng)) deallocate(state%ng)
       end if
 
-      if (trim(MMF_microphysics_scheme) .eq. 'micro_p3') then
+      if (trim(MMF_microphysics_scheme) .eq. 'Micro_p3') then
          if (allocated(state%qc)) deallocate(state%qc)
          if (allocated(state%qi)) deallocate(state%qi)
          if (allocated(state%qr)) deallocate(state%qr)
