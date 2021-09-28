@@ -13,6 +13,11 @@ file(GLOB FORTRAN_SRC ../../sam/*.F90 ../../sam/SGS_TKE/*.F90 ../../sam/MICRO_SA
 file(GLOB CPP_SRC     ../*.F90 ../*.cpp)
 file(GLOB CUDA_SRC    ../*.cpp)
 
+set(Scream_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../../../../scream)
+include(${Scream_SOURCE_DIR}/cmake/machine-files/${MACH}.cmake)
+add_subdirectory(${Scream_SOURCE_DIR} ./scream)
+include_directories(${Scream_SOURCE_DIR})
+
 add_subdirectory(${YAKL_HOME} ./yakl)
 include_directories(${YAKL_HOME})
 
