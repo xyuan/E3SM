@@ -149,7 +149,7 @@ echo cmake                          \
   -DNCFLAGS="$NCFLAGS"              \
   -DDEFS2D="$DEFS2D"                \
   -DDEFS3D="$DEFS3D"                \
-  -DCUDA_FLAGS="$CUDAFLAGS"         \
+  -DYAKL_CUDA_FLAGS="$CUDAFLAGS"    \
   -DYAKL_HOME=${YAKL_HOME}          \
   -DYAKL_CUB_HOME=${YAKL_CUB_HOME}  \
   -DARCH="${ARCH}"                  \
@@ -163,7 +163,7 @@ cmake                               \
   -DNCFLAGS="$NCFLAGS"              \
   -DDEFS2D="$DEFS2D"                \
   -DDEFS3D="$DEFS3D"                \
-  -DCUDA_FLAGS="$CUDAFLAGS"         \
+  -DYAKL_CUDA_FLAGS="$CUDAFLAGS"    \
   -DYAKL_HOME=${YAKL_HOME}          \
   -DYAKL_CUB_HOME=${YAKL_CUB_HOME}  \
   -DARCH="${ARCH}"                  \
