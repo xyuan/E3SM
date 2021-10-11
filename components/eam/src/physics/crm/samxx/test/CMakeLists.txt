@@ -6,6 +6,7 @@ enable_language(CXX)
 enable_language(C)
 if ("${ARCH}" STREQUAL "CUDA")
   enable_language(CUDA)
+  set(YAKL_ARCH "CUDA")
 endif()
 enable_testing()
 
@@ -13,6 +14,7 @@ file(GLOB FORTRAN_SRC ../../sam/*.F90 ../../sam/SGS_TKE/*.F90 ../../sam/MICRO_SA
 file(GLOB CPP_SRC     ../*.F90 ../*.cpp)
 file(GLOB CUDA_SRC    ../*.cpp)
 
+set(USE_SAMXX TRUE CACHE INTERNAL "use samxx")
 set(Scream_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../../../../scream)
 include(${Scream_SOURCE_DIR}/cmake/machine-files/${MACH}.cmake)
 add_subdirectory(${Scream_SOURCE_DIR} ./scream)

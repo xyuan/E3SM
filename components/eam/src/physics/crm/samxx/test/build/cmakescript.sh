@@ -137,7 +137,7 @@ printf "NetCDF Flags: $NCFLAGS\n\n"
 ############################################################################
 FFLAGS="$FFLAGS -I$NCHOME/include -I$NFHOME/include"
 CXXFLAGS="$CXXFLAGS -I$NCHOME/include -I$NFHOME/include"
-CUDAFLAGS="$CUDAFLAGS ${CUDA_ARCH}"
+CUDAFLAGS="$CUDAFLAGS ${YAKL_CUDA_FLAGS}"
 
 printf "FFLAGS: $FFLAGS\n\n"
 printf "CXXFLAGS: $CXXFLAGS\n\n"
@@ -153,6 +153,8 @@ echo cmake                          \
   -DYAKL_HOME=${YAKL_HOME}          \
   -DYAKL_CUB_HOME=${YAKL_CUB_HOME}  \
   -DARCH="${ARCH}"                  \
+  -DMACH="${MACH}"                  \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON  \
   ..
 
 cmake                               \
@@ -165,6 +167,7 @@ cmake                               \
   -DYAKL_HOME=${YAKL_HOME}          \
   -DYAKL_CUB_HOME=${YAKL_CUB_HOME}  \
   -DARCH="${ARCH}"                  \
+  -DMACH="${MACH}"                  \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON  \
   ..
-
 
