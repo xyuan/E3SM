@@ -3,7 +3,7 @@ program driver
   use crmdims
   use params, only: crm_iknd, crm_lknd
   use params_kind, only: crm_rknd
-  use cpp_interface_mod, only: crm
+  use cpp_interface_mod, only: crm, scream_session_init, scream_session_finalize
   use crm_input_module
   use crm_output_module
   use crm_state_module
@@ -120,6 +120,7 @@ program driver
   ncrms = myTasks_end - myTasks_beg + 1
   masterTask = rank == 0
 
+  call scream_session_init()
   call gator_init()
 
   if (masterTask) then
@@ -550,6 +551,7 @@ program driver
   enddo
 
   call gator_finalize()
+  call scream_session_finalize()
 #if HAVE_MPI
   call mpi_finalize(ierr)
 #endif
