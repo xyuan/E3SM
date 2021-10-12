@@ -1282,7 +1282,7 @@ subroutine crm( ncrms, dt_gl, plev,       &
           crm_state_v_wind     (icrm,i,j,k) = v   (icrm,i,j,k)
           crm_state_w_wind     (icrm,i,j,k) = w   (icrm,i,j,k)
           crm_state_temperature(icrm,i,j,k) = tabs(icrm,i,j,k)
-#ifdef m2005
+#if defined(m2005)
           crm_state%qt(icrm,i,j,k) = micro_field(icrm,i,j,k,1 )
           crm_state%nc(icrm,i,j,k) = micro_field(icrm,i,j,k,2 )
           crm_state%qr(icrm,i,j,k) = micro_field(icrm,i,j,k,3 )
@@ -1294,7 +1294,7 @@ subroutine crm( ncrms, dt_gl, plev,       &
           crm_state%qg(icrm,i,j,k) = micro_field(icrm,i,j,k,9 )
           crm_state%ng(icrm,i,j,k) = micro_field(icrm,i,j,k,10)
           crm_state%qc(icrm,i,j,k) = cloudliq   (icrm,i,j,k)
-#else
+#elif defined(sam1mom)
           crm_state_qt(icrm,i,j,k) = micro_field(icrm,i,j,k,1)
           crm_state_qp(icrm,i,j,k) = micro_field(icrm,i,j,k,2)
           crm_state_qn(icrm,i,j,k) = qn         (icrm,i,j,k)
@@ -1305,7 +1305,7 @@ subroutine crm( ncrms, dt_gl, plev,       &
           crm_output%qci (icrm,i,j,k) = qci  (icrm,i,j,k)
           crm_output%qpl (icrm,i,j,k) = qpl  (icrm,i,j,k)
           crm_output%qpi (icrm,i,j,k) = qpi  (icrm,i,j,k)
-#ifdef m2005
+#if defined(m2005)
           crm_output%wvar(icrm,i,j,k) = wvar (icrm,i,j,k)
           crm_output%aut (icrm,i,j,k) = aut1 (icrm,i,j,k)
           crm_output%acc (icrm,i,j,k) = acc1 (icrm,i,j,k)
@@ -1343,7 +1343,7 @@ subroutine crm( ncrms, dt_gl, plev,       &
           crm_output%qi_mean(icrm,l) = crm_output%qi_mean(icrm,l) + qci(icrm,i,j,k)
           !$acc atomic update
           crm_output%qr_mean(icrm,l) = crm_output%qr_mean(icrm,l) + qpl(icrm,i,j,k)
-#ifdef sam1mom
+#if defined(sam1mom)
           omg = max(real(0.,crm_rknd),min(real(1.,crm_rknd),(tabs(icrm,i,j,k)-tgrmin)*a_gr))
 
           tmp = qpi(icrm,i,j,k)*omg
@@ -1353,7 +1353,7 @@ subroutine crm( ncrms, dt_gl, plev,       &
           tmp = qpi(icrm,i,j,k)*(1.-omg)
           !$acc atomic update
           crm_output%qs_mean(icrm,l) = crm_output%qs_mean(icrm,l) + tmp
-#else
+#elif defined(m2005)
           !$acc atomic update
           crm_output%qg_mean(icrm,l) = crm_output%qg_mean(icrm,l) + micro_field(icrm,i,j,k,iqg)
           !$acc atomic update
@@ -1396,7 +1396,7 @@ subroutine crm( ncrms, dt_gl, plev,       &
     enddo
   enddo
 
-#ifdef m2005
+#if defined(m2005)
   do icrm=1,ncrms
     crm_output%nc_mean(icrm,:) = crm_output%nc_mean(icrm,:) * factor_xy
     crm_output%ni_mean(icrm,:) = crm_output%ni_mean(icrm,:) * factor_xy
@@ -1446,11 +1446,11 @@ subroutine crm( ncrms, dt_gl, plev,       &
   do j=1,ny
     do i=1,nx
       do icrm = 1 , ncrms
-#ifdef sam1mom
+#if defined(sam1mom)
         precsfc(icrm,i,j) = precsfc(icrm,i,j)*dz(icrm)/dt/dble(nstop)
         precssfc(icrm,i,j) = precssfc(icrm,i,j)*dz(icrm)/dt/dble(nstop)
 #endif /* sam1mom */
-#ifdef m2005
+#if defined(m2005)
         precsfc(icrm,i,j) = precsfc(icrm,i,j)*dz(icrm)/dt/dble(nstop)     !mm/s/dz --> mm/s
         precssfc(icrm,i,j) = precssfc(icrm,i,j)*dz(icrm)/dt/dble(nstop)   !mm/s/dz --> mm/s
 #endif /* m2005 */
@@ -1564,14 +1564,14 @@ subroutine crm( ncrms, dt_gl, plev,       &
       l = plev-k+1
       crm_output%flux_u    (icrm,l) = (uwle(icrm,k) + uwsb(icrm,k))*tmp1*factor_xy/nstop
       crm_output%flux_v    (icrm,l) = (vwle(icrm,k) + vwsb(icrm,k))*tmp1*factor_xy/nstop
-#ifdef sam1mom
+#if defined(sam1mom)
       crm_output%flux_qt   (icrm,l) = mkwle(icrm,k,1) + mkwsb(icrm,k,1)
       crm_output%fluxsgs_qt(icrm,l) = mkwsb(icrm,k,1)
       crm_output%flux_qp   (icrm,l) = mkwle(icrm,k,2) + mkwsb(icrm,k,2)
       crm_output%qt_trans  (icrm,l) = mkadv(icrm,k,1) + mkdiff(icrm,k,1)
       crm_output%qp_trans  (icrm,l) = mkadv(icrm,k,2) + mkdiff(icrm,k,2)
 #endif /* sam1mom */
-#ifdef m2005
+#if defined(m2005)
       crm_output%flux_qt   (icrm,l) = mkwle(icrm,k,1   ) + mkwsb(icrm,k,1   ) +  &
                          mkwle(icrm,k,iqci) + mkwsb(icrm,k,iqci)
       crm_output%fluxsgs_qt(icrm,l) = mkwsb(icrm,k,1   ) + mkwsb(icrm,k,iqci)
@@ -1720,7 +1720,7 @@ subroutine crm( ncrms, dt_gl, plev,       &
   call deallocate_sgs()
   call deallocate_vars()
   call deallocate_micro()
-#ifdef sam1mom
+#if defined(sam1mom)
   call deallocate_micro_params()
 #endif
 #if defined( MMF_ESMT )
