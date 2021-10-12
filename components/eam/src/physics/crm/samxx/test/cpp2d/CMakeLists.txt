@@ -10,15 +10,11 @@ add_executable(cpp2d ../dmdf.F90 ../cpp_driver.F90
                ../../../ecppvars.F90
                ../../../openacc_utils.F90
                ${CPP_SRC})
-target_link_libraries(cpp2d yakl ${NCFLAGS})
+target_link_libraries(cpp2d yakl ekat p3 shoc physics_share scream_share ${NCFLAGS})
 set_property(TARGET cpp2d APPEND PROPERTY COMPILE_FLAGS ${DEFS2D} )
 
-set_source_files_properties(${CUDA_SRC} PROPERTIES COMPILE_FLAGS "${YAKL_CXX_FLAGS}")
-if ("${ARCH}" STREQUAL "CUDA")
-  set_source_files_properties(${CUDA_SRC} PROPERTIES LANGUAGE CUDA)
-  set_source_files_properties(${CUDA_SRC} PROPERTIES COMPILE_FLAGS "${CUDA_FLAGS}")
-  include_directories(${YAKL_CUB_HOME})
-endif()
+include(${YAKL_HOME}/yakl_utils.cmake)
+yakl_process_cxx_source_files("${CUDA_SRC}")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../yakl)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../scream/src/physics/p3)
@@ -27,10 +23,10 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/../scream/src/physics/share)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../scream/src/share)
 
 include_directories(${YAKL_HOME})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../scream/src/physics/p3)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../scream/src/physics/shoc)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../scream/src/physics/share)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../scream/src/share)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../../scream/src/physics/p3)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../../scream/src/physics/shoc)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../../scream/src/physics/share)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../../scream/src/share)
 
 
 

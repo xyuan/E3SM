@@ -17,10 +17,10 @@ export NCRMS=1
 export CC=mpicc
 export CXX=mpic++
 export FC=mpif90
-export FFLAGS=" -g -O3 -ffree-line-length-none "
-export CXXFLAGS=" -g -O3 "
+export FFLAGS=" -g -ffree-line-length-none "
+export CXXFLAGS=" -g -DTHRUST_IGNORE_CUB_VERSION_CHECK "
 export ARCH="CUDA"
-export YAKL_CUDA_FLAGS="-arch sm_70 -g -O3  --use_fast_math -D__USE_CUDA__ -DKOKKOS_IMPL_DEBUG_CUDA_SERIAL_EXECUTION -DTHRUST_IGNORE_CUB_VERSION_CHECK --expt-extended-lambda --expt-relaxed-constexpr"
+export YAKL_CUDA_FLAGS="-arch sm_70 -g --use_fast_math -D__USE_CUDA__ -DKOKKOS_IMPL_DEBUG_CUDA_SERIAL_EXECUTION -DTHRUST_IGNORE_CUB_VERSION_CHECK --expt-extended-lambda --expt-relaxed-constexpr"
 export YAKL_HOME="`pwd`/../../../../../../../../externals/YAKL"
 export YAKL_CUB_HOME="`pwd`/../../../../../../../../externals/cub"
 
