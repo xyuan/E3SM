@@ -106,7 +106,7 @@ program driver
 
   logical(c_bool):: use_MMF_VT      ! flag for MMF variance transport
   integer        :: MMF_VT_wn_max   ! wavenumber cutoff for filtered variance transport
-  character(len=7) :: microphysics_scheme = 'sam1mom'
+  character(len=10) :: microphysics_scheme = 'Micro_p3'
 
 #if HAVE_MPI
   call mpi_init(ierr)
