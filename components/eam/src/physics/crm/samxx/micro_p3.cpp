@@ -375,45 +375,48 @@ void micro_p3_proc() {
      int icrm = (icol/nx)/ny;
      int k    = ilev*Spack::n + s;
      if (k < nlev) {
-        micro_field(ixcldliq, k,j+offy_s,i+offx_s,icrm) = prog_state.qc(icol,ilev)[s];
-        micro_field(ixnumliq, k,j+offy_s,i+offx_s,icrm) = prog_state.nc(icol,ilev)[s];
-        micro_field(ixrain,   k,j+offy_s,i+offx_s,icrm) = prog_state.qr(icol,ilev)[s];
-        micro_field(ixnumrain,k,j+offy_s,i+offx_s,icrm) = prog_state.nr(icol,ilev)[s];
-        micro_field(ixcldice, k,j+offy_s,i+offx_s,icrm) = prog_state.qi(icol,ilev)[s];
-        micro_field(ixcldrim, k,j+offy_s,i+offx_s,icrm) = prog_state.qm(icol,ilev)[s];
-        micro_field(ixnumice, k,j+offy_s,i+offx_s,icrm) = prog_state.ni(icol,ilev)[s];
-        micro_field(ixrimvol, k,j+offy_s,i+offx_s,icrm) = prog_state.bm(icol,ilev)[s];
-        micro_field(ixqv,     k,j+offy_s,i+offx_s,icrm) = prog_state.qv(icol,ilev)[s];      
+        int ind_ixcldliq  = (((ixcldliq*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixnumliq  = (((ixnumliq*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixrain    = (((ixrain*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixnumrain = (((ixnumrain*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixcldice  = (((ixcldice*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixcldrim  = (((ixcldrim*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixnumice  = (((ixnumice*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixrimvol  = (((ixrimvol*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+        int ind_ixqv      = (((ixqv*micro_field.dimension[1]+k)*micro_field.dimension[2]+j+offy_s)
+                            *micro_field.dimension[3]+i+offx_s)*micro_field.dimension[4]+icrm;
+
+        micro_field.myData[ind_ixcldliq]  = prog_state.qc(icol,ilev)[s];
+        micro_field.myData[ind_ixnumliq]  = prog_state.nc(icol,ilev)[s];
+        micro_field.myData[ind_ixrain]    = prog_state.qr(icol,ilev)[s];
+        micro_field.myData[ind_ixnumrain] = prog_state.nr(icol,ilev)[s];
+        micro_field.myData[ind_ixcldice]  = prog_state.qi(icol,ilev)[s];
+        micro_field.myData[ind_ixcldrim]  = prog_state.qm(icol,ilev)[s];
+        micro_field.myData[ind_ixnumice]  = prog_state.ni(icol,ilev)[s];
+        micro_field.myData[ind_ixrimvol]  = prog_state.bm(icol,ilev)[s];
+        micro_field.myData[ind_ixqv]      = prog_state.qv(icol,ilev)[s];      
      } 
   });
 
-  Kokkos::parallel_for(Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0, 0, 0}, {ncol, npack, Spack::n}), KOKKOS_LAMBDA(int icol, int ilev, int s) {
-     int i    = icol%nx;
-     int j    = (icol/nx)%ny;
-     int icrm = (icol/nx)/ny;
-     int k    = j*Spack::n + s;
-     if (k < nlev) {
-        qv2qi_depos_tend(k,icrm)   = diag_outputs.qv2qi_depos_tend(icol,ilev)[s];
-        diag_eff_radius_qc(k,icrm) = diag_outputs.diag_eff_radius_qc(icol,ilev)[s];
-        diag_eff_radius_qi(k,icrm) = diag_outputs.diag_eff_radius_qi(icol,ilev)[s];
-        rho_qi(k,icrm)             = diag_outputs.rho_qi(icol,ilev)[s];
-        precip_liq_flux(k,icrm)    = diag_outputs.precip_liq_flux(icol,ilev)[s];
-        precip_ice_flux(k,icrm)    = diag_outputs.precip_ice_flux(icol,ilev)[s];
-     }
-  });
+  view_to_array(diag_outputs.qv2qi_depos_tend, ncol, nlev, qv2qi_depos_tend);
+  view_to_array(diag_outputs.diag_eff_radius_qc, ncol, nlev, diag_eff_radius_qc);
+  view_to_array(diag_outputs.diag_eff_radius_qi, ncol, nlev, diag_eff_radius_qi);
+  view_to_array(diag_outputs.rho_qi, ncol, nlev, rho_qi);
+  view_to_array(diag_outputs.precip_liq_flux, ncol, nlev, precip_liq_flux);
+  view_to_array(diag_outputs.precip_ice_flux, ncol, nlev, precip_ice_flux);
 
-  Kokkos::parallel_for(Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0, 0, 0}, {ncol, npack, Spack::n}), KOKKOS_LAMBDA(int icol, int ilev, int s) {
-     int i    = icol%nx;
-     int j    = (icol/nx)%ny;
-     int icrm = (icol/nx)/ny;
-     int k    = ilev*Spack::n + s;
-     if (k < nlev) {
-         liq_ice_exchange(k,icrm) = history_only.liq_ice_exchange(icol,ilev)[s];
-         vap_liq_exchange(k,icrm) = history_only.vap_liq_exchange(icol,ilev)[s];
-         vap_ice_exchange(k,icrm) = history_only.vap_ice_exchange(icol,ilev)[s];
-     }
-  });
-     
+  view_to_array(history_only.liq_ice_exchange, ncol, nlev, liq_ice_exchange);
+  view_to_array(history_only.vap_liq_exchange, ncol, nlev, vap_liq_exchange);
+  view_to_array(history_only.vap_ice_exchange, ncol, nlev, vap_ice_exchange);
+
   if (docloud)  micro_p3_diagnose();   // leave this line here
 }
 
