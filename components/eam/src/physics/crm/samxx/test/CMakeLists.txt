@@ -16,7 +16,11 @@ file(GLOB CUDA_SRC    ../*.cpp)
 
 set(USE_SAMXX TRUE CACHE INTERNAL "use samxx")
 set(Scream_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../../../../../scream)
-include(${Scream_SOURCE_DIR}/cmake/machine-files/${MACH}.cmake)
+if ("${ARCH}" STREQUAL "CUDA")
+  include(${Scream_SOURCE_DIR}/cmake/machine-files/${MACH}.cmake)
+else()
+  include(${Scream_SOURCE_DIR}/cmake/machine-files/${MACH}_cpu.cmake)
+endif()
 add_subdirectory(${Scream_SOURCE_DIR} ./scream)
 include_directories(${Scream_SOURCE_DIR})
 

@@ -204,10 +204,10 @@ void shoc_proc() {
   Kokkos::parallel_for(Kokkos::MDRangePolicy<Kokkos::Rank<3>>({0, 0, 0}, {ny, nx, ncrms}), KOKKOS_LAMBDA(int j, int i, int icrm) {
     // Surface fluxes provided by host model
     int icol = i+nx*(j+ny*icrm);
-    wthl_sfc_1d(icol) = shf.myData[icrm]/(cp*rrho.myData[icol*rrho.dimension[1]+nlev]);
-    wqw_sfc_1d(icol)  = cflx.myData[icrm]/rrho.myData[icol*rrho.dimension[1]+nlev];
-    uw_sfc_1d(icol)   = wsx.myData[icrm]/rrho.myData[icol*rrho.dimension[1]+nlev];
-    vw_sfc_1d(icol)   = wsy.myData[icrm]/rrho.myData[icol*rrho.dimension[1]+nlev];
+    wthl_sfc_1d(icol) = shf.myData[icrm]/(cp*rrho.myData[icol*rrho.dimension[1]+nlev-1]);
+    wqw_sfc_1d(icol)  = cflx.myData[icrm]/rrho.myData[icol*rrho.dimension[1]+nlev-1];
+    uw_sfc_1d(icol)   = wsx.myData[icrm]/rrho.myData[icol*rrho.dimension[1]+nlev-1];
+    vw_sfc_1d(icol)   = wsy.myData[icrm]/rrho.myData[icol*rrho.dimension[1]+nlev-1];
     phis_1d(icol)     = phis.myData[icrm];
   });
 
